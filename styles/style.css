@@ -1,0 +1,37 @@
+html {
+    background-color: #F2BB66;
+}
+.background{
+    background-color: #F2BB66;
+}
+.logo img {
+    height: 30px;
+}
+.logo p {
+    color: #7B7B7B;
+    font-size: 15px;
+}
+.cart {
+    color: #fff;
+    background-color: #EB5A1E;
+    border-radius: 15px;
+}
+.tag{
+    background-color: white;
+    border-radius: 15px;
+}
+.size-tag{
+    border: 2px #EB5A1E solid;
+}
+.is-chosen{
+    background-color: #EB5A1E;
+    color: white;
+}
+.pizza-icon{
+    height: 150px;
+    width: auto;
+}
+.pizza-card{
+    max-width: 200px;
+}
+
