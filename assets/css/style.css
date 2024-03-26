@@ -35,3 +35,11 @@ html {
     max-width: 200px;
 }
 
+.item{
+    max-width: 700px;
+
+}
+.btn-close{
+    color: black;
+    opacity: 1;
+}
