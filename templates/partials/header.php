@@ -1,3 +1,6 @@
+<?php
+include('../_inc/functions.php');
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,7 +10,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Mermaid's song</title>
     <?php
-        require_once('../_inc/functions.php');
         add_stylesheets();
     ?>
 </head>
@@ -24,22 +26,25 @@
                     </h3>
                     </a>
                     <!-- Nav Links -->
+                    
                     <div class="d-none d-sm-flex">
+                        
                     <ul class="navbar-nav flex-row gap-3 pe-3">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="home.php">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="cart.php">Cart</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="contact.php">Contact</a>
-                        </li>
+                    <?php
+                     $pages = array('Home'=>'home.php',
+                     'Cart'=>'cart.php',
+                     'Contact'=>'contact.php',
+                    );
+
+                        echo(generate_menu($pages));
+                    ?>
+
                     </ul>
                     <div class="cart d-flex align-items-center justify-content-center px-3 py-1">
                         <div>100 € | 1 <i class="bi bi-cart"></i></div>
                     </div>
                 </div>
+                
                 <!-- Toggle button -->
                 <button class="navbar-toggler  d-sm-none" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">

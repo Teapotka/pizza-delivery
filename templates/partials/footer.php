@@ -21,7 +21,6 @@
     </div>
     
     <?php
-        require_once('../_inc/functions.php');
         add_script();
     ?>
 </body>

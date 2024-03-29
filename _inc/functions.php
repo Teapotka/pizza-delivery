@@ -23,4 +23,21 @@ function add_script(){
 function redirect_homepage(){
     header("Location: templates/home.php");
 }
+
+function current_page(){
+    $page_name = basename($_SERVER["SCRIPT_NAME"], '.php');
+    echo $page_name;
+    return $page_name;
+}
+
+function generate_menu(array $pages): string{
+    $menuItems = '';
+    $current_page = strtolower(basename($_SERVER["SCRIPT_NAME"], '.php'));
+    foreach($pages as $page_name => $page_url){
+        $active_class = (strtolower($page_name) == $current_page) ? ' active' : '';
+        $menuItems .= '<li class="nav-item"><a class="nav-link'.$active_class.'" aria-current="page" href="' . $page_url . '">' . $page_name . '</a></li>';
+    }
+    return $menuItems;
+}
+
 ?>

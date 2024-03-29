@@ -43,3 +43,7 @@ html {
     color: black;
     opacity: 1;
 }
+.form-item{
+    max-width: 400px;
+
+}
