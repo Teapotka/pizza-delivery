@@ -1,3 +1,7 @@
+a{
+    text-decoration: none;
+    color: black;
+}
 html {
     background-color: #F2BB66;
 }
@@ -23,9 +27,12 @@ html {
 .size-tag{
     border: 2px #EB5A1E solid;
 }
+.text-tag{
+    color: #EB5A1E;
+}
 .is-chosen{
     background-color: #EB5A1E;
-    color: white;
+    color: white !important;
 }
 .pizza-icon{
     height: 150px;
