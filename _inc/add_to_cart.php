@@ -6,32 +6,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pizza_id = $_POST['order_id'];
         $order_object = new Order();
         $order_object->deleteOrder($pizza_id);
+
+    }
+    else if (isset($_POST['_method']) && $_POST['_method'] === 'PATCH'){
+        $order_id = $_POST['order_id'];
+        $delta = $_POST['delta'];
+        $order_object = new Order();
+        $order_object->updateOrderPieces($order_id, $delta);
+
     }
     else {
+        $order_object = new Order();
         $pizza_id = $_POST['pizza_id'];
         $size_id = $_POST['size_id'];
-        $order_object = new Order();
-        $orders = $order_object->selectOrderIds();
-        $count = 0;
-        foreach($orders as $order){
-            if(($order->pizza_id == $pizza_id) && ($order->size_id == $size_id)){
-                $count = $order->pieces;
-            }
-        }
-        if($count == 0){
-            $order_object->createOrder($pizza_id, $size_id, $count+1);
-        }
-        else{
-            $order_object->updateOrderPieces($pizza_id, $size_id, $count+1);
-        }
-        // $count = $count + 1;
-        // $order_object->createOrder($pizza_id, $size_id, $count);
-    }
-    // Retrieve pizza ID from POST data
 
-    // Execute SQL query to add pizza to cart
-    // Example:
-    // INSERT INTO cart (pizza_id) VALUES (:pizzaId)
+        $order_object->createOrder($pizza_id, $size_id, session_status());
+        $session_object = new Session();
+    
+    }
     
     // Redirect back to the page where the form was submitted from
     header('Location: ' . $_SERVER['HTTP_REFERER']);

@@ -1,12 +1,23 @@
 <?php
 include_once("partials/header.php");
 $order_object = new Order();
+// $session_object = new Session();
 $order_display = $order_object->displayOrders();
 $total_display = $order_object->displayTotal();
 ?>
 
 <main class="container-fluid d-flex flex-column background justify-content-center align-items-center mt-3 gap-4">
     <?php
+    //    $session_object = new Session();
+       // $pizza_ids = array_unique(array_column($_SESSION['order'], 'pizza_id'));
+       // $size_ids = array_unique(array_column($_SESSION['order'], 'size_id'));
+    //    $pizza_ids = $session_object->getColumn('order', 'pizza_id', true);
+    //    $size_ids = $session_object->getColumn('order', 'size_id', true);
+        // print_r($pizza_ids);
+        // print_r($size_ids);
+        // $pizza_ids_list = implode(',', $pizza_ids);
+        // $sizes_ids_list = implode(',', $size_ids);
+        // print_r($order_object->selectOrders2($pizza_ids_list, $sizes_ids_list));
         echo($order_display);
         echo($total_display);
     ?>    

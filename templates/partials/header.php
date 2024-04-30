@@ -1,6 +1,14 @@
 <?php
 include('../_inc/functions.php');
 $order_object = new Order();
+// $total = $order_object->selectTotal();
+// $session_object = new Session();
+// $pizza_ids = array_unique(array_column($_SESSION['order'], 'pizza_id'));
+// $size_ids = array_unique(array_column($_SESSION['order'], 'size_id'));
+// $pizza_ids = $session_object->getColumn('order', 'pizza_id', true);
+// $size_ids = $session_object->getColumn('order', 'size_id', true);
+// $pizza_ids_list = implode(',', $pizza_ids);
+// $sizes_ids_list = implode(',', $size_ids);
 $total = $order_object->selectTotal();
 $count = $order_object->selectCount();
 ?>
@@ -37,6 +45,7 @@ $count = $order_object->selectCount();
                      $pages = array('Home'=>'home.php',
                      'Cart'=>'cart.php',
                      'Contact'=>'contact.php',
+                     'Admin'=>'admin.php',
                     );
 
                         echo(generate_menu($pages));
@@ -65,9 +74,11 @@ $count = $order_object->selectCount();
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                             <?php 
-                                 $pages = array('Home'=>'home.php',
+                                 $pages = array(
+                                'Home'=>'home.php',
                                  'Cart'=>'cart.php',
                                  'Contact'=>'contact.php',
+                                 'Admin'=>'admin.php',
                                 );
 
                                 echo(generate_menu($pages));

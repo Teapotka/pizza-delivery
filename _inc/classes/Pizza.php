@@ -8,7 +8,13 @@ class Pizza extends Database {
     }
 
     public function displayTypeTags(){
-        $types = ['All', 'Vegan', 'Vegetarian', 'Pork', 'Chicken', 'Spicy'];
+        $results = $this->selectAllTags();
+        $types = [];
+        foreach ($results as $row) {
+            $types[] = $row->type; // Extracting type from each object
+        }
+        array_unshift($types, 'All');
+        // $types = ['All', 'Vegan', 'Vegetarian', 'Pork', 'Chicken', 'Spicy'];
         $current_type = isset($_GET['type']) ? $_GET['type'] : null;
         $output = '';
         foreach($types as $type){
@@ -16,6 +22,18 @@ class Pizza extends Database {
             $output .= '<a href="?type='. $type. '" class="tag ' . $class . ' px-3 py-1">' . $type . '</a>';
         }
         return $output;
+    }
+
+    public function selectAllTags() {
+        try {
+            $sql = "SELECT DISTINCT type FROM pizza"; // SQL query to select all pizzas
+            $stmt = $this->db->query($sql); // Execute the query
+            $sizes = $stmt->fetchAll(); // Fetch all pizzas as objects
+            return $sizes; 
+        } catch(PDOException $e) {
+            echo "Error: " . $e->getMessage(); // Handle any errors
+        }
+        
     }
 
     // Method to select pizza data from the database
@@ -46,6 +64,48 @@ class Pizza extends Database {
         }
     }
 
+    public function createSize($size, $surcharge){
+        $sql = "INSERT INTO pizza_sizes (size, surcharge) VALUES (?, ?)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$size, $surcharge]);
+    }
+    
+    public function updateSize($sizeId, $size, $surcharge){
+        $sql = "UPDATE pizza_sizes SET size = ?, surcharge = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$size, $surcharge, $sizeId]);
+    }
+    
+    public function deleteSize($sizeId){
+        $sql = "DELETE FROM pizza_sizes WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$sizeId]);
+    }
+
+    public function createPizza($pizzaName, $type, $price, $imageData) {
+        $sql = "INSERT INTO pizza (pizza_name, type, price, image_data) VALUES (?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData)]); // Decoding back if you encoded before storing
+    }
+    
+    public function updatePizza($pizzaId, $pizzaName, $type, $price, $imageData) {
+        if (is_null($imageData)) {
+            $sql = "UPDATE pizza SET pizza_name = ?, type = ?, price = ? WHERE pizza_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$pizzaName, $type, $price, $pizzaId]);
+        } else {
+            $sql = "UPDATE pizza SET pizza_name = ?, type = ?, price = ?, image_data = ? WHERE pizza_id = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData), $pizzaId]); // Include image data in the update
+        }
+    }
+    
+    public function deletePizza($pizzaId) {
+        $sql = "DELETE FROM pizza WHERE pizza_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$pizzaId]);
+    }
+    
     // Method to display pizzas
     public function displayPizzas(){
         $pizzas = $this->selectPizzas(); // Get pizzas from the database
@@ -99,6 +159,63 @@ class Pizza extends Database {
             $output .= '</div>';
         }
         return $output; // Return the HTML output
+    }
+
+    public function displayAdminSizes(){
+        $sizes = $this->selectSizes();
+        $output = '';
+        $output .= '<form action="../_inc/admin_sizes.php" method="POST" class="d-flex align-items-center justify-content-center gap-3">';
+        $output .= '<input type="text" name="size" placeholder="Size" class="form-control" required>';
+        $output .= '<input type="number" name="surcharge" placeholder="Surcharge" class="form-control" required>';
+        $output .= '<button type="submit" name="_method" value="CREATE" class="btn btn-success">Add</button>';
+        $output .= '</form>';
+        foreach ($sizes as $size) {
+            $output .= '<form action="../_inc/admin_sizes.php" method="POST" class="d-flex align-items-center justify-content-center gap-3">';
+            $output .= '<input type="hidden" name="size_id" value="' . $size->id . '" />';
+            $output .= '<input type="text" name="size" value="' . $size->size . '" class="form-control" />';
+            $output .= '<input type="text" name="surcharge" value="' . $size->surcharge . '" class="form-control" />';
+            $output .= '<button type="submit" name="_method" value="UPDATE" class="btn btn-primary">Update</button>';
+            $output .= '<button type="submit" name="_method" value="DELETE" class="btn btn-danger" aria-label="Delete size">Delete</button>';
+            $output .= '</form>';
+        }
+
+        return $output;
+    }
+
+    public function displayAdminPizzas(){
+        $pizzas = $this->selectPizzas();
+        $output = '';
+        $output .= '<form action="../_inc/admin_pizzas.php" method="POST" enctype="multipart/form-data" class="mb-3">';
+        $output .= '<div class="d-flex align-items-center justify-content-between bg-white p-3 rounded">';
+        $output .= '<input placeholder="Name" name="pizza_name" class="form-control me-2" required>';
+        $output .= '<input placeholder="Type" name="type" class="form-control me-2" required>';
+        $output .= '<input placeholder="Price" type="number" step="0.01" name="price" class="form-control me-2" required>';
+        $output .= '<input type="file" name="image_data" class="form-control-file me-2">';
+        $output .= '<button type="submit" name="_method" value="CREATE" class="btn btn-success">Add</button>';
+        $output .= '</div>';
+        $output .= '</form>';
+        foreach ($pizzas as $pizza) {
+            $base64Image = base64_encode($pizza->image_data);
+            $output .= '<form action="../_inc/admin_pizzas.php" method="POST" enctype="multipart/form-data" class="mb-3">';
+            $output .= '<div class="d-flex align-items-center justify-content-between bg-white p-3 rounded">';
+    
+            $output .= '<input type="hidden" name="pizza_id" value="' . $pizza->pizza_id . '">';
+    
+            $output .= '<input value="' . $pizza->pizza_name . '" name="pizza_name" class="form-control me-2" required>';
+            $output .= '<input value="' . $pizza->type . '" name="type" class="form-control me-2" required>';
+            $output .= '<input value="' . $pizza->price . '" type="number" step="0.01" name="price" class="form-control me-2" required>';
+            $output .= '<div><img src="data:image/jpeg;base64,' . $base64Image . '" style="width: 100px; height: auto;" class="me-2"></div>';
+            $output .= '<div class="d-flex align-items-center">';
+            
+            $output .= '<input type="file" name="image_data" class="form-control-file me-2">';
+            $output .= '<button type="submit" name="_method" value="UPDATE" class="btn btn-primary me-2">Update</button>';
+            $output .= '<button type="submit" name="_method" value="DELETE" class="btn btn-danger">Delete</button>';
+            $output .= '</div>';
+    
+            $output .= '</div>';
+            $output .= '</form>';
+        }
+        return $output;
     }
 }
 
