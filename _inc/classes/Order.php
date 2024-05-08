@@ -6,6 +6,7 @@ class Order extends Database {
         $this->db = $this->db_connection(); // Establish database connection
     }
 
+    // Method to map order from session with database
     public function selectOrders(){
         try {
             $session_object = new Session();
@@ -33,7 +34,7 @@ class Order extends Database {
             }
 
             $combinedList = [];
-            foreach ($_SESSION['order'] as $sessionOrder) {
+            foreach ($session_object->getValue('order') as $sessionOrder) {
                 $pizzaId = $sessionOrder['pizza_id'];
                 $sizeId = $sessionOrder['size_id'];
 
@@ -52,24 +53,13 @@ class Order extends Database {
                     ];
                 }
             }
-            // print_r($combinedList);
             return $combinedList; // Return the result
         } catch(PDOException $e) {
             echo "Error: " . $e->getMessage(); // Handle any errors
         }
     }
-    public function selectOrderIds(){
-        try {
-            
-            $sql = "SELECT * FROM `order`";
-            $stmt = $this->db->query($sql); // Execute the query
-            $orders = $stmt->fetchAll(); // Fetch all pizzas as objects
-            return $orders; // Return the result
-        } catch(PDOException $e) {
-            echo "Error: " . $e->getMessage(); // Handle any errors
-        }
-    }
 
+    // Method to get total amount of order
     public function selectTotal(){
         $orders = $this->selectOrders();
         $total = 0;
@@ -79,13 +69,17 @@ class Order extends Database {
         return $total;
     }
 
+    // Method to get total pieces of order
     public function selectCount(){
-        if (isset($_SESSION['order']) && is_array($_SESSION['order'])) {
+        $session_object = new Session();
+        if ($session_object->getValue('order') ) {
             return count($_SESSION['order']); // Return the count of items in the session array
         }
         return 0;
     }
 
+
+    // Method to create order in session
     function createOrder($pizza_id, $size_id, $status) {
         // Start the session if not already started
         if ($status == PHP_SESSION_NONE) {
@@ -117,6 +111,7 @@ class Order extends Database {
         }
     }
 
+    // Method to update order in session
     public function updateOrderPieces($order_id,$delta){
         if (isset($_SESSION['order'][$order_id])) {
             if(($delta == -1) && $_SESSION['order'][$order_id]['pieces'] == 1){
@@ -126,15 +121,7 @@ class Order extends Database {
         }
     }
 
-    function getOrderFromSession() {
-        // Start the session if not already started
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    
-        // Return orders if set, otherwise return an empty array
-        return $_SESSION['order'] ?? [];
-    }
+    // Method to delete order in session
     public function deleteOrder($index) {
         // Start the session if not already started
         if (session_status() === PHP_SESSION_NONE) {
@@ -147,12 +134,9 @@ class Order extends Database {
         }
     }
 
+
+    // Method to display orders
     public function displayOrders(){
-        // $orders = $this->selectOrders();
-        // $pizza_ids = array_unique(array_column($_SESSION['order'], 'pizza_id'));
-        // $size_ids = array_unique(array_column($_SESSION['order'], 'size_id'));
-        // $pizza_ids_list = implode(',', $pizza_ids);
-        // $sizes_ids_list = implode(',', $size_ids);
         $orders = $this->selectOrders();
         $output = "";
         $i = 0;
@@ -170,7 +154,7 @@ class Order extends Database {
             $output .= '<h4>'.$order['pizza_name'].' - '.$order['size'].'</h4>';
             $output .= '</div>';
             $output .= '<div class="d-flex align-items-center justify-content-center gap-3">';
-            $output .= '<form action="../_inc/add_to_cart.php" method="POST">';
+            $output .= '<form action="../_inc/order.php" method="POST">';
             $output .= '<div class="d-flex">';
             $output .= '<input type="hidden" name="_method" value="PATCH">';
             $output .= '<input type="hidden" name="order_id" value="'.$i.'">';
@@ -182,7 +166,7 @@ class Order extends Database {
             $output .= '<h3>'.$total.' €</h3>';
             $output .= '</div>';
             $output .= '</div>';
-            $output .= '<form action="../_inc/add_to_cart.php" method="POST">';
+            $output .= '<form action="../_inc/order.php" method="POST">';
             $output .= '<input type="hidden" name="_method" value="DELETE">';
             $output .= '<input type="hidden" name="order_id" value="' . $i . '">';
             $output .= '<button type="submit" class="btn-close"></button>';
@@ -190,22 +174,22 @@ class Order extends Database {
             $output .= '</div>'; 
             $i += 1;       
         }
-        return $output;
+        return $output; // Returns HTML output
     }
 
+    // Method to display total of order
     public function displayTotal(){
-        // $pizza_ids = array_unique(array_column($_SESSION['order'], 'pizza_id'));
-        // $size_ids = array_unique(array_column($_SESSION['order'], 'size_id'));
-        // $pizza_ids_list = implode(',', $pizza_ids);
-        // $sizes_ids_list = implode(',', $size_ids);
         $total = $this->selectTotal();
 
         $output = '<div class="d-flex align-items-center justify-content-center gap-3">';
         $output .= '<h1 class="text-white">'.$total.' €</h1>';
-        $output .= '<button class="btn bg-white rounded fw-bold">Order</button>';
+        $output .= '<form action="thankyou.php" method="POST">';
+        $output .= '<input type="hidden" name="order" value="completed">';
+        $output .= '<button type="submit" class="btn bg-white rounded fw-bold">Order</button>';
+        $output .= '</input>';
         $output .= '</div>';
 
-        return $output;
+        return $output; // Returns HTML output
     }
     
 

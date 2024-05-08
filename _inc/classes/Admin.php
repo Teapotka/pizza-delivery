@@ -7,6 +7,7 @@ class Admin extends Database {
         $this->db = $this->db_connection(); // Establish database connection
     }
 
+    // Method to create new user in admins table 
     public function register($login, $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $sql = "INSERT INTO admins (login, password) VALUES (?, ?)";
@@ -14,6 +15,7 @@ class Admin extends Database {
         return $stmt->execute([$login, $hashedPassword]);
     }
 
+    // Method to authenticate user from admins table
     public function authenticate($login, $password) {
         $sql = "SELECT password FROM admins WHERE login = ?";
         $stmt = $this->db->prepare($sql);

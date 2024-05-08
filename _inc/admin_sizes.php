@@ -6,10 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     $sizeId = $_POST['size_id'] ?? null;
     $size = $_POST['size'];
     $surcharge = $_POST['surcharge'];
-    echo($method);
-    echo($sizeId);
-    echo($size);
-    echo($surcharge);
     switch ($method) {
         case 'CREATE':
             $pizza->createSize($size, $surcharge);

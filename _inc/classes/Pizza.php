@@ -14,16 +14,16 @@ class Pizza extends Database {
             $types[] = $row->type; // Extracting type from each object
         }
         array_unshift($types, 'All');
-        // $types = ['All', 'Vegan', 'Vegetarian', 'Pork', 'Chicken', 'Spicy'];
         $current_type = isset($_GET['type']) ? $_GET['type'] : null;
         $output = '';
         foreach($types as $type){
             $class = ($type == $current_type || ($type == 'All' && $current_type === null)) ? 'is-chosen' : '';
             $output .= '<a href="?type='. $type. '" class="tag ' . $class . ' px-3 py-1">' . $type . '</a>';
         }
-        return $output;
+        return $output; // Return the HTML output
     }
 
+    // Method to select tags data from the database
     public function selectAllTags() {
         try {
             $sql = "SELECT DISTINCT type FROM pizza"; // SQL query to select all pizzas
@@ -40,7 +40,6 @@ class Pizza extends Database {
     public function selectPizzas(){
         try {
             $selected_type = isset($_GET['type']) ? $_GET['type'] : null;
-            // $sql = "SELECT * FROM pizza"; // SQL query to select all pizzas
             $sql = ($selected_type !== null) ? "SELECT * FROM pizza WHERE type = \"". $selected_type ."\";" : "SELECT * FROM pizza";
             if ($selected_type == "All"){
                 $sql = "SELECT * FROM pizza";
@@ -52,6 +51,7 @@ class Pizza extends Database {
             echo "Error: " . $e->getMessage(); // Handle any errors
         }
     }
+
     // Method to select sizes data from the database
     public function selectSizes(){
         try {
@@ -64,30 +64,35 @@ class Pizza extends Database {
         }
     }
 
+    //Create request to sizes table
     public function createSize($size, $surcharge){
         $sql = "INSERT INTO pizza_sizes (size, surcharge) VALUES (?, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$size, $surcharge]);
     }
     
+    //Update request to sizes table
     public function updateSize($sizeId, $size, $surcharge){
         $sql = "UPDATE pizza_sizes SET size = ?, surcharge = ? WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$size, $surcharge, $sizeId]);
     }
-    
+
+    //Delete request to sizes table
     public function deleteSize($sizeId){
         $sql = "DELETE FROM pizza_sizes WHERE id = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$sizeId]);
     }
 
+    //Create request to pizza table
     public function createPizza($pizzaName, $type, $price, $imageData) {
         $sql = "INSERT INTO pizza (pizza_name, type, price, image_data) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData)]); // Decoding back if you encoded before storing
+        $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData)]);
     }
     
+    //Update request to pizza table
     public function updatePizza($pizzaId, $pizzaName, $type, $price, $imageData) {
         if (is_null($imageData)) {
             $sql = "UPDATE pizza SET pizza_name = ?, type = ?, price = ? WHERE pizza_id = ?";
@@ -96,10 +101,11 @@ class Pizza extends Database {
         } else {
             $sql = "UPDATE pizza SET pizza_name = ?, type = ?, price = ?, image_data = ? WHERE pizza_id = ?";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData), $pizzaId]); // Include image data in the update
+            $stmt->execute([$pizzaName, $type, $price, base64_decode($imageData), $pizzaId]);
         }
     }
     
+    //Delete request to pizza table
     public function deletePizza($pizzaId) {
         $sql = "DELETE FROM pizza WHERE pizza_id = ?";
         $stmt = $this->db->prepare($sql);
@@ -150,9 +156,10 @@ class Pizza extends Database {
                 }
             }
             $output .= '<h4>' . $pizza->price + $surcharge . ' €</h4>';
-            $output .= '<form action="../_inc/add_to_cart.php" method="POST">';
+            $output .= '<form action="../_inc/order.php" method="POST">';
             $output .= '<input type="hidden" name="size_id" value="' . (($current_pizza_id == $pizza->pizza_id) ? $current_size_id : 1) . '">';
             $output .= '<input type="hidden" name="pizza_id" value="' . $pizza->pizza_id . '">';
+            $output .= '<input type="hidden" name="_method" value="CREATE">';
             $output .= '<button type="submit" class="tag size-tag is-chosen px-3 py-1">+ Add</button>';
             $output .= '</form>';
             $output .= '</div>';
@@ -215,7 +222,7 @@ class Pizza extends Database {
             $output .= '</div>';
             $output .= '</form>';
         }
-        return $output;
+        return $output; // Return the HTML output
     }
 }
 

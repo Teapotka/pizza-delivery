@@ -8,11 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'];
     $price = $_POST['price'];
     $pizzaId = $_POST['pizza_id'] ?? null; // This will only be set for UPDATE and DELETE operations
-    echo($method);
-    echo($pizzaName);
-    echo($type);
-    echo($price);
-    echo($pizzaId);
+
     // Process image data if a file is uploaded
     if (!empty($_FILES['image_data']['name'])) {
         $imageData = file_get_contents($_FILES['image_data']['tmp_name']);

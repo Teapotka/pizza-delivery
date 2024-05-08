@@ -7,10 +7,6 @@
         private $password = '';
     
         protected $connection;
-
-        //public function __construct(){
-            //$this->connection = $this->db_connection();
-        //}
         
         public function __destruct() {
             // Uzatvorenie spojenia s databázou
