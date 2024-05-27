@@ -156,7 +156,7 @@ class Order extends Database {
             $output .= '<div class="d-flex align-items-center justify-content-center gap-3">';
             $output .= '<form action="../_inc/order.php" method="POST">';
             $output .= '<div class="d-flex">';
-            $output .= '<input type="hidden" name="_method" value="PATCH">';
+            $output .= '<input type="hidden" name="_method" value="UPDATE">';
             $output .= '<input type="hidden" name="order_id" value="'.$i.'">';
             $output .= '<button type="submit" name="delta" value="-1" class="btn d-flex align-items-center justify-content-center"><i class="bi bi-dash-circle d-flex"></i></button>';
             $output .= '<h3>'.$order['pieces'].' pc.</h3>';
